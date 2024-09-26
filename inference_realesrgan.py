@@ -31,7 +31,9 @@ def main():
               'Only used for the realesr-general-x4v3 model'))
     parser.add_argument('-s', '--outscale', type=float, default=4, help='The final upsampling scale of the image')
     parser.add_argument(
-        '--model_path', type=str, default=None, help='[Option] Model path. Usually, you do not need to specify it')
+        '--model_path', type=str, default=None, help='[Option] Model path')
+    parser.add_argument(
+        '--gfpgan_model_path', type=str, default=None, help='GFPGAN face restore model path')
     parser.add_argument('--suffix', type=str, default='out', help='Suffix of the restored image')
     parser.add_argument('-t', '--tile', type=int, default=0, help='Tile size, 0 for no tile during testing')
     parser.add_argument('--tile_pad', type=int, default=10, help='Tile padding')
@@ -115,10 +117,10 @@ def main():
         half=not args.fp32,
         gpu_id=args.gpu_id)
 
-    if args.face_enhance:  # Use GFPGAN for face enhancement
+    if args.face_enhance and args.gfpgan_model_path:  # Use GFPGAN for face enhancement
         from gfpgan import GFPGANer
         face_enhancer = GFPGANer(
-            model_path='https://github.com/TencentARC/GFPGAN/releases/download/v1.3.0/GFPGANv1.3.pth',
+            model_path=args.gfpgan_model_path,
             upscale=args.outscale,
             arch='clean',
             channel_multiplier=2,
